@@ -11,7 +11,7 @@ Your application has to imitate work of an online shop.
 
 Employees should be able to do the following:
 1. show every table;
-2. add, correct, and delete `Employee`, `Client`, `Appliance`, `Manufacturer`;
+2. add, correct, and delete `EmployeeEntity`, `ClientEntity`, `ApplianceEntity`, `ManufacturerEntity`;
 3. approve orders.
 
 Clients and employees should be able to do the following:
@@ -32,13 +32,13 @@ Your application must implement next layers:
 * Use a skeleton application;
 * Use H2 database to realisation storage;
 * Use annotations to describe DB entities. List of entities:
-  * `User`;
-  * `Client`;
-  * `Employee`;
-  * `Manufacturer`;
-  * `Appliance`;
-  * `Order`;
-  * `OrderRow`.
+  * `UserEntity`;
+  * `ClientEntity`;
+  * `EmployeeEntity`;
+  * `ManufacturerEntity`;
+  * `ApplianceEntity`;
+  * `OrderEntity`;
+  * `OrderRowEntity`.
 * Use Spring JPA technology;
 * Use Spring Security;
 * Implement internationalization and localization in controllers;
