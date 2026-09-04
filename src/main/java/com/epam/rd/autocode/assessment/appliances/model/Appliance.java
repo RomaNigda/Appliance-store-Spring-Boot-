@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Appliance {
     private Long id;
     private String name;
@@ -19,17 +20,17 @@ public class Appliance {
     private Integer power;
     private BigDecimal price;
 
-    public Appliance(Long id, String name, Category category, String model,
-                     Manufacturer manufacturer, PowerType powerType,
-                     String characteristic, String description, Integer power) {
-        this.id = id;
-        this.name = name;
-        this.category = category;
-        this.model = model;
-        this.manufacturer = manufacturer;
-        this.powerType = powerType;
-        this.characteristic = characteristic;
-        this.description = description;
-        this.power = power;
-    }
+//    public Appliance(Long id, String name, Category category, String model,
+//                     Manufacturer manufacturer, PowerType powerType,
+//                     String characteristic, String description, Integer power) {
+//        this.id = id;
+//        this.name = name;
+//        this.category = category;
+//        this.model = model;
+//        this.manufacturer = manufacturer;
+//        this.powerType = powerType;
+//        this.characteristic = characteristic;
+//        this.description = description;
+//        this.power = power;
+//    }
 }
