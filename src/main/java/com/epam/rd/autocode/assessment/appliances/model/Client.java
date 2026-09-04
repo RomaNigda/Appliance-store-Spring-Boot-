@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Client extends User {
     private String card;
