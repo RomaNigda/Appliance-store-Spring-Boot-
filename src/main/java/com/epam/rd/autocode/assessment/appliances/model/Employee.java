@@ -7,9 +7,13 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Employee extends User {
     private String department;
+
+    public Employee(Long id, String name, String email, String password, String department) {
+        super(id, name, email, password);
+        this.department = department;
+    }
 
 }
