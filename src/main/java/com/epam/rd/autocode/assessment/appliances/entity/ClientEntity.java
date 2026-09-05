@@ -1,38 +1,26 @@
 package com.epam.rd.autocode.assessment.appliances.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "clients")
-public class ClientEntity {
+@PrimaryKeyJoinColumn(name = "user_id")
+public class ClientEntity extends UserEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NotBlank(message = "{user.name.notBlank}")
-    @Column(nullable = false)
-    private String name;
-
-    @NotBlank(message = "{user.email.notBlank}")
-    @Email(message = "{user.email.invalid}")
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @NotBlank(message = "{user.password.notBlank}")
-    @Size(min = 8, message = "{user.password.size}")
-    @Column(nullable = false)
-    private String password;
-
-    @NotBlank(message = "{client.card.notBlank}")
+    @Column(name = "card")
     private String card;
+
+    public ClientEntity(Long id, String name, String email, String password, String card) {
+        super(id, name, email, password);
+        this.card = card;
+        this.addRole(RoleName.ROLE_CLIENT);
+    }
 }
