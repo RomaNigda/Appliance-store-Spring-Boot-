@@ -2,6 +2,7 @@ package com.epam.rd.autocode.assessment.appliances.dto;
 
 import com.epam.rd.autocode.assessment.appliances.entity.ManufacturerEntity;
 import com.epam.rd.autocode.assessment.appliances.model.Category;
+import com.epam.rd.autocode.assessment.appliances.model.Manufacturer;
 import com.epam.rd.autocode.assessment.appliances.model.PowerType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,7 +27,7 @@ public record ApplianceResponseDto(
         String model,
 
         @NotNull(message = "{appliance.manufacturer.notNull}")
-        ManufacturerEntity manufacturer,
+        ManufacturerResponseDto manufacturer,
 
         @NotNull(message = "{appliance.powerType.notNull}")
         PowerType powerType,

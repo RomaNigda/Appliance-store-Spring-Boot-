@@ -1,10 +1,7 @@
-package com.epam.rd.autocode.assessment.appliances.service;
+package com.epam.rd.autocode.assessment.appliances.service.impl;
 
 import com.epam.rd.autocode.assessment.appliances.entity.ClientEntity;
 import com.epam.rd.autocode.assessment.appliances.entity.EmployeeEntity;
-import com.epam.rd.autocode.assessment.appliances.model.Client;
-import com.epam.rd.autocode.assessment.appliances.model.Employee;
-import com.epam.rd.autocode.assessment.appliances.model.User;
 import com.epam.rd.autocode.assessment.appliances.repository.ClientRepository;
 import com.epam.rd.autocode.assessment.appliances.repository.EmployeeRepository;
 import org.springframework.security.core.userdetails.UserDetails;
