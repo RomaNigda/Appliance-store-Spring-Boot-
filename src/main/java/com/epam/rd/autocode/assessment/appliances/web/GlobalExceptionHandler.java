@@ -1,6 +1,7 @@
 package com.epam.rd.autocode.assessment.appliances.web;
 
 import com.epam.rd.autocode.assessment.appliances.exceptions.ApplianceNotFoundException;
+import com.epam.rd.autocode.assessment.appliances.exceptions.ClientNotFoundException;
 import com.epam.rd.autocode.assessment.appliances.exceptions.ManufacturerNotFoundException;
 import com.epam.rd.autocode.assessment.appliances.web.ErrorResponse;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,6 +18,18 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ClientNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleClientNotFound(
+            ClientNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Client not found",
+                LocalDateTime.now(),
+                Map.of("client", ex.getMessage())
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
 
     @ExceptionHandler(ManufacturerNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleManufacturerNotFound(
