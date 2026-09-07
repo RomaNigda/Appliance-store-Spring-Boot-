@@ -2,6 +2,7 @@ package com.epam.rd.autocode.assessment.appliances.web;
 
 import com.epam.rd.autocode.assessment.appliances.exceptions.ApplianceNotFoundException;
 import com.epam.rd.autocode.assessment.appliances.exceptions.ClientNotFoundException;
+import com.epam.rd.autocode.assessment.appliances.exceptions.EmployeeNotFoundException;
 import com.epam.rd.autocode.assessment.appliances.exceptions.ManufacturerNotFoundException;
 import com.epam.rd.autocode.assessment.appliances.web.ErrorResponse;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,6 +19,18 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(EmployeeNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEmployeeNotFound(
+            EmployeeNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                "Employee not found",
+                LocalDateTime.now(),
+                Map.of("employee", ex.getMessage())
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
 
     @ExceptionHandler(ClientNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleClientNotFound(
