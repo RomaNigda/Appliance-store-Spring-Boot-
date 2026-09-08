@@ -8,62 +8,54 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(OrderService orderService) {
-        this.orderService = orderService;
-    }
-
     @GetMapping
-//    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
-    public ResponseEntity<List<OrderResponseDto>> findAll(Authentication authentication) {
-        // employee -> усі замовлення; client -> лише власні (логіка фільтрації - в сервісі)
-        return ResponseEntity.ok(orderService.findAllForUser(authentication));
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
+    public ResponseEntity<List<OrderResponseDto>> findAll() {
+        return ResponseEntity.ok(orderService.findAllForCurrentUser());
     }
 
     @GetMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
-    public ResponseEntity<OrderResponseDto> findById(@PathVariable Long id, Authentication authentication) {
-        return ResponseEntity.ok(orderService.findByIdForUser(id, authentication));
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
+    public ResponseEntity<OrderResponseDto> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.findByIdForCurrentUser(id));
     }
 
     @PostMapping
-//    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
-    public ResponseEntity<OrderResponseDto> create(@Valid @RequestBody OrderRequestDto requestDto,
-                                    Authentication authentication) {
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
+    public ResponseEntity<OrderResponseDto> create(@Valid @RequestBody OrderRequestDto requestDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(orderService.create(requestDto, authentication));
+                .body(orderService.create(requestDto));
     }
 
     @PutMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
     public ResponseEntity<OrderResponseDto> update(@PathVariable Long id,
-                                                    @Valid @RequestBody OrderRequestDto requestDto,
-                                                    Authentication authentication) {
-        // сервіс сам перевіряє: не approved і належить цьому користувачу (якщо client)
-        return ResponseEntity.ok(orderService.update(id, requestDto, authentication));
+                                                   @Valid @RequestBody OrderRequestDto requestDto) {
+        return ResponseEntity.ok(orderService.update(id, requestDto));
     }
 
     @DeleteMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id, Authentication authentication) {
-        orderService.delete(id, authentication);
+    public void delete(@PathVariable Long id) {
+        orderService.delete(id);
     }
 
     @PostMapping("/{id}/approve")
-//    @PreAuthorize("hasRole('EMPLOYEE')")
-    public ResponseEntity<OrderResponseDto> approve(@PathVariable Long id, Authentication authentication) {
-        return ResponseEntity.ok(orderService.approve(id, authentication));
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<OrderResponseDto> approve(@PathVariable Long id) {
+        return ResponseEntity.ok(orderService.approve(id));
     }
 }
