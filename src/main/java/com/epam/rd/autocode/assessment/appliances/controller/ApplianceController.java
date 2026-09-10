@@ -2,6 +2,7 @@ package com.epam.rd.autocode.assessment.appliances.controller;
 
 import com.epam.rd.autocode.assessment.appliances.dto.ApplianceRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.ApplianceResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.CategoryStatsDto;
 import com.epam.rd.autocode.assessment.appliances.service.ApplianceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,5 +51,12 @@ public class ApplianceController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         applianceService.delete(id);
+    }
+
+    @GetMapping("/stats/categories")
+    public ResponseEntity<List<CategoryStatsDto>> getCategoryStats() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(applianceService.getCategoryStatistics());
     }
 }

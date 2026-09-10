@@ -2,6 +2,7 @@ package com.epam.rd.autocode.assessment.appliances.service;
 
 import com.epam.rd.autocode.assessment.appliances.dto.OrderRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.OrderResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.TopClientDto;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface OrderService {
     void delete(Long id);
 
     OrderResponseDto approve(Long id);
+
+    List<TopClientDto> findTopClients(int limit);
 }

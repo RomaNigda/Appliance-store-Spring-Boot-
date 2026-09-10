@@ -2,9 +2,11 @@ package com.epam.rd.autocode.assessment.appliances.service.impl;
 
 import com.epam.rd.autocode.assessment.appliances.dto.ApplianceRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.ApplianceResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.CategoryStatsDto;
 import com.epam.rd.autocode.assessment.appliances.entity.ApplianceEntity;
 import com.epam.rd.autocode.assessment.appliances.exceptions.ApplianceNotFoundException;
 import com.epam.rd.autocode.assessment.appliances.mapper.ApplianceMapper;
+import com.epam.rd.autocode.assessment.appliances.model.Category;
 import com.epam.rd.autocode.assessment.appliances.repository.ApplianceRepository;
 import com.epam.rd.autocode.assessment.appliances.service.ApplianceService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,5 +94,19 @@ public class ApplianceServiceImpl implements ApplianceService {
     public ApplianceEntity getApplianceEntityById(Long id) {
         return applianceRepository.findById(id)
                 .orElseThrow(() -> new ApplianceNotFoundException(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CategoryStatsDto> getCategoryStatistics() {
+        return applianceRepository.getCategoryStatisticsRaw().stream()
+                .map(row -> new CategoryStatsDto(
+                        Category.valueOf(row[0].toString()),
+                        ((Number) row[1]).longValue(),
+                        BigDecimal.valueOf(((Number) row[2]).doubleValue()),
+                        (BigDecimal) row[3],
+                        (BigDecimal) row[4]
+                ))
+                .toList();
     }
 }

@@ -2,6 +2,7 @@ package com.epam.rd.autocode.assessment.appliances.service.impl;
 
 import com.epam.rd.autocode.assessment.appliances.dto.OrderRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.OrderResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.TopClientDto;
 import com.epam.rd.autocode.assessment.appliances.entity.ClientEntity;
 import com.epam.rd.autocode.assessment.appliances.entity.EmployeeEntity;
 import com.epam.rd.autocode.assessment.appliances.entity.OrderEntity;
@@ -17,6 +18,7 @@ import com.epam.rd.autocode.assessment.appliances.service.OrderService;
 import com.epam.rd.autocode.assessment.appliances.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -229,5 +231,12 @@ public class OrderServiceImpl implements OrderService {
         log.debug("Order {} approved successfully", id);
 
         return OrderResponseDto.fromEntity(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TopClientDto> findTopClients(int limit) {
+        log.debug("Finding top {} clients by total amount", limit);
+        return orderRepository.findTopClientsByTotalAmount(PageRequest.of(0, limit));
     }
 }

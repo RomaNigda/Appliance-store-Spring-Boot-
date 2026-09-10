@@ -2,6 +2,7 @@ package com.epam.rd.autocode.assessment.appliances.controller;
 
 import com.epam.rd.autocode.assessment.appliances.dto.OrderRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.OrderResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.TopClientDto;
 import com.epam.rd.autocode.assessment.appliances.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +58,12 @@ public class OrderController {
     @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<OrderResponseDto> approve(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.approve(id));
+    }
+
+    @GetMapping("/stats/top-clients")
+    @PreAuthorize("hasRole('EMPLOYEE')")
+    public ResponseEntity<List<TopClientDto>> getTopClients(
+            @RequestParam(defaultValue = "5") int limit) {
+        return ResponseEntity.ok(orderService.findTopClients(limit));
     }
 }
