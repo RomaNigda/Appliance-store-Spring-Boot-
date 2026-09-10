@@ -12,14 +12,4 @@ public class MainConfig {
         return new ModelMapper();
     }
 
-//    @Bean
-//    public ModelMapper modelMapper() {
-//        ModelMapper mapper = new ModelMapper();
-//
-//        mapper.getConfiguration()
-//                .setFieldMatchingEnabled(true)
-//                .setSkipNullEnabled(true);
-//
-//        return mapper;
-//    }
 }

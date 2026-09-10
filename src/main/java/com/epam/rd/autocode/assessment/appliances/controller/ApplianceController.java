@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/appliances")
+@PreAuthorize("hasRole('EMPLOYEE')")
 public class ApplianceController {
 
     private final ApplianceService applianceService;
@@ -23,20 +24,16 @@ public class ApplianceController {
     }
 
     @GetMapping
-//    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
     public ResponseEntity<List<ApplianceResponseDto>> findAll() {
         return ResponseEntity.ok(applianceService.findAll());
     }
 
     @GetMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
     public ResponseEntity<ApplianceResponseDto> findById(@PathVariable Long id) {
         return ResponseEntity.ok(applianceService.findById(id));
     }
 
     @PostMapping
-//    @PreAuthorize("hasRole('EMPLOYEE')")
-
     public ResponseEntity<ApplianceResponseDto> create(@Valid @RequestBody ApplianceRequestDto requestDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -44,14 +41,12 @@ public class ApplianceController {
     }
 
     @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<ApplianceResponseDto> update(@PathVariable Long id,
                                                         @Valid @RequestBody ApplianceRequestDto requestDto) {
         return ResponseEntity.ok(applianceService.update(id, requestDto));
     }
 
     @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('EMPLOYEE')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         applianceService.delete(id);

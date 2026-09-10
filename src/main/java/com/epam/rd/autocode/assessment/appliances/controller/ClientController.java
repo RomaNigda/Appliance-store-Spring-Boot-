@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/clients")
-//@PreAuthorize("hasRole('EMPLOYEE')")
+@PreAuthorize("hasRole('EMPLOYEE')")
 public class ClientController {
 
     private final ClientService clientService;

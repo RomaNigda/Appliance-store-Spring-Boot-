@@ -18,9 +18,4 @@ public class EmployeeEntity extends UserEntity {
     @Column(name = "department")
     private String department;
 
-    public EmployeeEntity(Long id, String name, String email, String password, String department) {
-        super(id, name, email, password);
-        this.department = department;
-        this.addRole(RoleName.ROLE_EMPLOYEE);
-    }
 }

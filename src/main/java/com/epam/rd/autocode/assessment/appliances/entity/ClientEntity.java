@@ -18,9 +18,4 @@ public class ClientEntity extends UserEntity {
     @Column(name = "card")
     private String card;
 
-    public ClientEntity(Long id, String name, String email, String password, String card) {
-        super(id, name, email, password);
-        this.card = card;
-        this.addRole(RoleName.ROLE_CLIENT);
-    }
 }

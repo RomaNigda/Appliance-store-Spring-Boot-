@@ -18,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/manufacturers")
+@PreAuthorize("hasRole('EMPLOYEE')")
 public class ManufacturerController {
 
     private final Logger log = LoggerFactory.getLogger(ManufacturerController.class);
@@ -29,19 +30,16 @@ public class ManufacturerController {
     }
 
     @GetMapping
-//    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
     public ResponseEntity<List<ManufacturerResponseDto>> findAll() {
         return ResponseEntity.ok(manufacturerService.findAll());
     }
 
     @GetMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('EMPLOYEE', 'CLIENT')")
     public ResponseEntity<ManufacturerResponseDto> findById(@PathVariable Long id) {
         return ResponseEntity.ok(manufacturerService.findById(id));
     }
 
     @PostMapping
-//    @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<ManufacturerResponseDto> create(@Valid @RequestBody ManufacturerRequestDto requestDto) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -49,14 +47,12 @@ public class ManufacturerController {
     }
 
     @PutMapping("/{id}")
-//    @PreAuthorize("hasRole('EMPLOYEE')")
     public ResponseEntity<ManufacturerResponseDto> update(@PathVariable Long id,
                                                            @Valid @RequestBody ManufacturerRequestDto requestDto) {
         return ResponseEntity.ok(manufacturerService.update(id, requestDto));
     }
 
     @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('EMPLOYEE')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         manufacturerService.delete(id);
