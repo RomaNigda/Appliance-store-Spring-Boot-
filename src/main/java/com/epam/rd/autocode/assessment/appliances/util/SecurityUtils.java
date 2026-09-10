@@ -18,6 +18,29 @@ public class SecurityUtils {
     private final ClientRepository clientRepository;
     private final EmployeeRepository employeeRepository;
 
+
+    // Додати в SecurityUtils
+    public UserEntity getCurrentUserFromJwt() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new SecurityException("User is not authenticated");
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetails userDetails) {
+            String email = userDetails.getUsername();
+
+            return clientRepository.findByEmail(email)
+                    .map(UserEntity.class::cast)
+                    .orElseGet(() -> employeeRepository.findByEmail(email)
+                            .map(UserEntity.class::cast)
+                            .orElseThrow(() -> new SecurityException("User not found with email: " + email))
+                    );
+        }
+
+        throw new SecurityException("Invalid authentication principal");
+    }
+
     /**
      * Отримує поточного авторизованого користувача
      */

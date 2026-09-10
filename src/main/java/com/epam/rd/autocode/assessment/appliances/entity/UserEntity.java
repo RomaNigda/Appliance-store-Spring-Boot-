@@ -57,8 +57,11 @@ public abstract class UserEntity implements UserDetails {
         return roles.stream().anyMatch(role -> role.getName() == RoleName.ROLE_CLIENT);
     }
 
-    public void addRole(RoleName roleName) {
-        this.roles.add(new RoleEntity(roleName));
+    public void addRole(RoleEntity role) {
+        if (this.roles == null) {
+            this.roles = new HashSet<>();
+        }
+        this.roles.add(role);
     }
 
     @Override
@@ -71,6 +74,11 @@ public abstract class UserEntity implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override
