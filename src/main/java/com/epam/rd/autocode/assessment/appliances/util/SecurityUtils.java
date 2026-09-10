@@ -1,5 +1,6 @@
 package com.epam.rd.autocode.assessment.appliances.util;
 
+import com.epam.rd.autocode.assessment.appliances.aspect.Loggable;
 import com.epam.rd.autocode.assessment.appliances.entity.ClientEntity;
 import com.epam.rd.autocode.assessment.appliances.entity.EmployeeEntity;
 import com.epam.rd.autocode.assessment.appliances.entity.UserEntity;
@@ -44,6 +45,7 @@ public class SecurityUtils {
     /**
      * Отримує поточного авторизованого користувача
      */
+    @Loggable
     public UserEntity getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || !authentication.isAuthenticated()) {

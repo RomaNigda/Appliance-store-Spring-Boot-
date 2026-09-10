@@ -17,10 +17,7 @@ spring:
     # SQL Initialization Settings
     defer-datasource-initialization: true
 
-  # SQL Initialization Settings (закоментовано, як у вихідному файлі)
-  # sql:
-  #   init:
-  #     data-locations: classpath:data.sql
+
 
 # Server Settings
 server:
@@ -32,6 +29,7 @@ logging:
     com.epam.rd.autocode.assessment.appliances:
       service.impl: DEBUG
       controller: DEBUG
+      aspect: DEBUG
 
 # JWT Configuration
 jwt:
