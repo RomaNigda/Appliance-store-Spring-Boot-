@@ -1,0 +1,40 @@
+# PostgreSQL Datasource Settings
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/appliance-store
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  # JPA / Hibernate Settings
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    # SQL Initialization Settings
+    defer-datasource-initialization: true
+
+  # SQL Initialization Settings (закоментовано, як у вихідному файлі)
+  # sql:
+  #   init:
+  #     data-locations: classpath:data.sql
+
+# Server Settings
+server:
+  port: 8080
+
+# Logging Settings
+logging:
+  level:
+    com.epam.rd.autocode.assessment.appliances:
+      service.impl: DEBUG
+      controller: DEBUG
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:mE57irnPY6qoa9NRVEKqQUG5LQUU7v1zFcyb8o9OxDg=}
+  expiration: ${JWT_EXPIRATION:86400000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
