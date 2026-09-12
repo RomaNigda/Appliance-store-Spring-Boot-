@@ -15,10 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Validated
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;

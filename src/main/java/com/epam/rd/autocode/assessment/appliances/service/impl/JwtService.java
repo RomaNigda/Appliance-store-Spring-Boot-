@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.security.Key;
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.function.Function;
 
 
 @Service
+@Validated
 public class JwtService {
 
     @Value("${jwt.secret}")

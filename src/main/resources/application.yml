@@ -14,8 +14,14 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-    # SQL Initialization Settings
+      jakarta:
+        persistence:
+          validation:
+            mode: auto
     defer-datasource-initialization: true
+
+  messages:
+    basename: messages
 
 
 

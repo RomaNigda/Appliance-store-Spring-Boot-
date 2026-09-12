@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -21,6 +22,8 @@ import java.util.List;
 @RequestMapping("/api/appliances")
 @PreAuthorize("hasRole('EMPLOYEE')")
 @RequiredArgsConstructor
+
+@Validated
 public class ApplianceController {
 
     private final ApplianceService applianceService;

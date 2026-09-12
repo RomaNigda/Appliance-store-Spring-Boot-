@@ -6,10 +6,12 @@ import com.epam.rd.autocode.assessment.appliances.dto.RegisterRequestDto;
 
 import com.epam.rd.autocode.assessment.appliances.service.impl.AuthService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Validated
 public class AuthController {
 
     private final AuthService authService;
@@ -44,7 +47,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponseDto> refresh(@RequestBody String refreshToken) {
+    public ResponseEntity<AuthResponseDto> refresh(@RequestBody @NotBlank String refreshToken) {
         log.debug("Refresh token request");
         return ResponseEntity.ok(authService.refresh(refreshToken));
     }

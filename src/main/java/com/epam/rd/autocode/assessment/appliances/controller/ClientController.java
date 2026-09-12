@@ -11,12 +11,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/clients")
 @PreAuthorize("hasRole('EMPLOYEE')")
 @RequiredArgsConstructor
+@Validated
 public class ClientController {
 
     private final ClientService clientService;
