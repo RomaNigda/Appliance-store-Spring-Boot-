@@ -1,9 +1,13 @@
 package com.epam.rd.autocode.assessment.appliances.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,13 +29,16 @@ public abstract class UserEntity implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "name")
+    @NotBlank(message = "{user.name.notBlank}")
+    @UniqueElements(message = "{user.name.unique}")
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "email")
+    @Email(message = "{user.email.invalid}")
     private String email;
 
-    @Column(nullable = false)
+    @NotBlank(message = "{user.password.notBlank}")
     private String password;
 
     @ManyToMany(fetch = FetchType.EAGER)
