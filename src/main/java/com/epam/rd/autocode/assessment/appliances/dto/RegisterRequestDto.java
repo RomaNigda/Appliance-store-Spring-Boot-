@@ -1,5 +1,6 @@
 package com.epam.rd.autocode.assessment.appliances.dto;
 
+import com.epam.rd.autocode.assessment.appliances.validation.StrongPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,6 +15,7 @@ public record RegisterRequestDto(
 
         @NotBlank(message = "{user.password.notBlank}")
         @Size(min = 8, message = "{user.password.size}")
+        @StrongPassword
         String password,
 
         String department,  // Тільки для Employee

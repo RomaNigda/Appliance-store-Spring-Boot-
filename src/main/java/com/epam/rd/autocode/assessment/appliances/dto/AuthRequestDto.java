@@ -1,5 +1,6 @@
 package com.epam.rd.autocode.assessment.appliances.dto;
 
+import com.epam.rd.autocode.assessment.appliances.validation.StrongPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -9,6 +10,7 @@ public record AuthRequestDto(
         String email,
 
         @NotBlank(message = "{user.password.notBlank}")
+        @StrongPassword
         String password
 ) {
 }
