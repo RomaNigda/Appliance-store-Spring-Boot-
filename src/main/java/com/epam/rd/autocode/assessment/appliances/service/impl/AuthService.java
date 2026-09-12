@@ -9,7 +9,6 @@ import com.epam.rd.autocode.assessment.appliances.exceptions.DuplicateEmailExcep
 import com.epam.rd.autocode.assessment.appliances.repository.ClientRepository;
 import com.epam.rd.autocode.assessment.appliances.repository.EmployeeRepository;
 import com.epam.rd.autocode.assessment.appliances.repository.RoleRepository;
-import com.epam.rd.autocode.assessment.appliances.security.jwt.JwtService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

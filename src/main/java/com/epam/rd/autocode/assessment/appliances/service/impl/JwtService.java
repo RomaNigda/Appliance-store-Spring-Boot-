@@ -1,4 +1,4 @@
-package com.epam.rd.autocode.assessment.appliances.security.jwt;
+package com.epam.rd.autocode.assessment.appliances.service.impl;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
 
 @Service
 public class JwtService {

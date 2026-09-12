@@ -1,6 +1,7 @@
 package com.epam.rd.autocode.assessment.appliances.security.jwt;
 
 import com.epam.rd.autocode.assessment.appliances.security.CustomUserDetailsService;
+import com.epam.rd.autocode.assessment.appliances.service.impl.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
