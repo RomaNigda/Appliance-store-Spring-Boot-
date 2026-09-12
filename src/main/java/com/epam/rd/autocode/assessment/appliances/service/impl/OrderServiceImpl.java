@@ -2,23 +2,19 @@ package com.epam.rd.autocode.assessment.appliances.service.impl;
 
 import com.epam.rd.autocode.assessment.appliances.dto.OrderRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.OrderResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.PageResponseDto;
 import com.epam.rd.autocode.assessment.appliances.dto.TopClientDto;
-import com.epam.rd.autocode.assessment.appliances.entity.ClientEntity;
-import com.epam.rd.autocode.assessment.appliances.entity.EmployeeEntity;
-import com.epam.rd.autocode.assessment.appliances.entity.OrderEntity;
-import com.epam.rd.autocode.assessment.appliances.entity.UserEntity;
-import com.epam.rd.autocode.assessment.appliances.exceptions.ClientNotFoundException;
-import com.epam.rd.autocode.assessment.appliances.exceptions.EmployeeNotFoundException;
-import com.epam.rd.autocode.assessment.appliances.exceptions.OrderNotFoundException;
+import com.epam.rd.autocode.assessment.appliances.entity.*;
+import com.epam.rd.autocode.assessment.appliances.exceptions.*;
 import com.epam.rd.autocode.assessment.appliances.mapper.OrderMapper;
-import com.epam.rd.autocode.assessment.appliances.repository.ClientRepository;
-import com.epam.rd.autocode.assessment.appliances.repository.EmployeeRepository;
-import com.epam.rd.autocode.assessment.appliances.repository.OrderRepository;
+import com.epam.rd.autocode.assessment.appliances.repository.*;
 import com.epam.rd.autocode.assessment.appliances.service.OrderService;
 import com.epam.rd.autocode.assessment.appliances.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,32 +30,32 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final ClientRepository clientRepository;
     private final EmployeeRepository employeeRepository;
+    private final ApplianceRepository applianceRepository;
     private final SecurityUtils securityUtils;
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderResponseDto> findAllForCurrentUser() {
+    public PageResponseDto<OrderResponseDto> findAllForCurrentUser(Pageable pageable) {
         UserEntity currentUser = securityUtils.getCurrentUser();
-        log.debug("Fetching all orders for user: {}", currentUser.getEmail());
+        log.debug("Fetching orders for user: {}, page: {}, size: {}",
+                currentUser.getEmail(), pageable.getPageNumber(), pageable.getPageSize());
 
-        List<OrderEntity> orders;
+        Page<OrderEntity> page;
 
         if (currentUser.isEmployee()) {
-            // Employee бачить всі замовлення
             log.debug("Employee fetching all orders");
-            orders = orderRepository.findAll();
+            page = orderRepository.findAll(pageable);
         } else if (currentUser.isClient()) {
-            // Client бачить тільки свої замовлення
             log.debug("Client fetching their own orders");
-            orders = orderRepository.findByClientId(currentUser.getId());
+            page = orderRepository.findByClientId(currentUser.getId(), pageable);
         } else {
             throw new AccessDeniedException("User has no valid role");
         }
 
-        log.debug("Found {} orders", orders.size());
-        return orders.stream()
-                .map(OrderResponseDto::fromEntity)
-                .toList();
+        log.debug("Found {} orders on page {} of {}",
+                page.getNumberOfElements(), page.getNumber() + 1, page.getTotalPages());
+
+        return PageResponseDto.from(page, OrderResponseDto::fromEntity);
     }
 
     @Override
@@ -72,7 +68,6 @@ public class OrderServiceImpl implements OrderService {
 
         UserEntity currentUser = securityUtils.getCurrentUser();
 
-        // Client може бачити тільки свої замовлення
         if (currentUser.isClient() && !entity.getClient().getId().equals(currentUser.getId())) {
             log.warn("Client {} attempted to access order {} belonging to client {}",
                     currentUser.getId(), id, entity.getClient().getId());
@@ -88,9 +83,7 @@ public class OrderServiceImpl implements OrderService {
         UserEntity currentUser = securityUtils.getCurrentUser();
         log.debug("Creating new order for user: {}", currentUser.getEmail());
 
-        // 🔒 КЛЮЧОВА ПЕРЕВІРКА БЕЗПЕКИ
         if (currentUser.isClient()) {
-            // Client може створювати замовлення ТІЛЬКИ зі своїм ID
             if (!currentUser.getId().equals(requestDto.clientId())) {
                 log.warn("CLIENT SECURITY VIOLATION: Client {} attempted to create order for client {}",
                         currentUser.getId(), requestDto.clientId());
@@ -100,17 +93,13 @@ public class OrderServiceImpl implements OrderService {
             }
             log.debug("Client ID verification passed");
         }
-        // Employee може створювати для будь-якого клієнта (перевірка не потрібна)
 
-        // Перевіряємо існування клієнта
         ClientEntity client = clientRepository.findById(requestDto.clientId())
                 .orElseThrow(() -> new ClientNotFoundException(requestDto.clientId()));
 
-        // Перевіряємо існування працівника
         EmployeeEntity employee = employeeRepository.findById(requestDto.employeeId())
                 .orElseThrow(() -> new EmployeeNotFoundException(requestDto.employeeId()));
 
-        // Створюємо замовлення через маппер
         OrderEntity entity = orderMapper.toEntity(requestDto);
         entity.setClient(client);
         entity.setEmployee(employee);
@@ -131,7 +120,6 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity entity = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
-        // ❌ Заборонено оновлювати підтверджені замовлення
         if (entity.isApproved()) {
             log.warn("Attempt to update approved order: {}", id);
             throw new IllegalStateException("Cannot update an approved order");
@@ -139,32 +127,26 @@ public class OrderServiceImpl implements OrderService {
 
         UserEntity currentUser = securityUtils.getCurrentUser();
 
-        // 🔒 КЛЮЧОВА ПЕРЕВІРКА БЕЗПЕКИ
         if (currentUser.isClient()) {
-            // Client не може змінювати чужі замовлення
             if (!entity.getClient().getId().equals(currentUser.getId())) {
                 log.warn("CLIENT SECURITY VIOLATION: Client {} attempted to update order {} belonging to client {}",
                         currentUser.getId(), id, entity.getClient().getId());
                 throw new AccessDeniedException("You cannot update an order that does not belong to you");
             }
 
-            // Client не може змінювати clientId в замовленні
             if (!currentUser.getId().equals(requestDto.clientId())) {
                 log.warn("CLIENT SECURITY VIOLATION: Client {} attempted to change order client to {}",
                         currentUser.getId(), requestDto.clientId());
                 throw new AccessDeniedException("You cannot change the client of an order");
             }
         }
-        // Employee може оновлювати будь-яке замовлення (перевірка не потрібна)
 
-        // Перевіряємо існування клієнта та працівника
         ClientEntity client = clientRepository.findById(requestDto.clientId())
                 .orElseThrow(() -> new ClientNotFoundException(requestDto.clientId()));
 
         EmployeeEntity employee = employeeRepository.findById(requestDto.employeeId())
                 .orElseThrow(() -> new EmployeeNotFoundException(requestDto.employeeId()));
 
-        // Оновлюємо замовлення через маппер
         orderMapper.updateEntity(requestDto, entity);
         entity.setClient(client);
         entity.setEmployee(employee);
@@ -183,7 +165,6 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity entity = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
-        // ❌ Заборонено видаляти підтверджені замовлення
         if (entity.isApproved()) {
             log.warn("Attempt to delete approved order: {}", id);
             throw new IllegalStateException("Cannot delete an approved order");
@@ -191,7 +172,6 @@ public class OrderServiceImpl implements OrderService {
 
         UserEntity currentUser = securityUtils.getCurrentUser();
 
-        // 🔒 КЛЮЧОВА ПЕРЕВІРКА БЕЗПЕКИ
         if (currentUser.isClient()) {
             if (!entity.getClient().getId().equals(currentUser.getId())) {
                 log.warn("CLIENT SECURITY VIOLATION: Client {} attempted to delete order {} belonging to client {}",
@@ -209,8 +189,6 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponseDto approve(Long id) {
         log.debug("Approving order with id: {}", id);
 
-        // ✅ @PreAuthorize("hasRole('EMPLOYEE')") в контролері вже перевірив роль
-        // Додаткова перевірка на всяк випадок
         UserEntity currentUser = securityUtils.getCurrentUser();
         if (!currentUser.isEmployee()) {
             log.warn("User {} attempted to approve order without employee role", currentUser.getEmail());
@@ -220,7 +198,6 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity entity = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
 
-        // ✅ Можна підтвердити тільки непідтверджене замовлення
         if (entity.isApproved()) {
             log.warn("Attempt to approve already approved order: {}", id);
             throw new IllegalStateException("Order is already approved");

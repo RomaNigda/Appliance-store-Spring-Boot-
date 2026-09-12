@@ -2,14 +2,16 @@ package com.epam.rd.autocode.assessment.appliances.service;
 
 import com.epam.rd.autocode.assessment.appliances.dto.OrderRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.OrderResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.PageResponseDto;
 import com.epam.rd.autocode.assessment.appliances.dto.TopClientDto;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface OrderService {
 
-    List<OrderResponseDto> findAllForCurrentUser();
+    PageResponseDto<OrderResponseDto> findAllForCurrentUser(Pageable pageable);
 
     OrderResponseDto findByIdForCurrentUser(Long id);
 

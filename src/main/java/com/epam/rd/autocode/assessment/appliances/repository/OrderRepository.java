@@ -2,6 +2,7 @@ package com.epam.rd.autocode.assessment.appliances.repository;
 
 import com.epam.rd.autocode.assessment.appliances.dto.TopClientDto;
 import com.epam.rd.autocode.assessment.appliances.entity.OrderEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,11 +13,13 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 
-    List<OrderEntity> findByClientId(Long clientId);
+    Page<OrderEntity> findAll(Pageable pageable);
 
-    List<OrderEntity> findByEmployeeId(Long employeeId);
+    Page<OrderEntity> findByClientId(Long clientId, Pageable pageable);
 
-    List<OrderEntity> findByApproved(boolean approved);
+    Page<OrderEntity> findByEmployeeId(Long employeeId, Pageable pageable);
+
+    Page<OrderEntity> findByApproved(boolean approved, Pageable pageable);
 
     @Query("""
         SELECT new com.epam.rd.autocode.assessment.appliances.dto.TopClientDto(
