@@ -3,30 +3,36 @@ package com.epam.rd.autocode.assessment.appliances.controller;
 import com.epam.rd.autocode.assessment.appliances.dto.ApplianceRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.ApplianceResponseDto;
 import com.epam.rd.autocode.assessment.appliances.dto.CategoryStatsDto;
+import com.epam.rd.autocode.assessment.appliances.dto.PageResponseDto;
 import com.epam.rd.autocode.assessment.appliances.service.ApplianceService;
+import com.epam.rd.autocode.assessment.appliances.web.PageableFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/appliances")
 @PreAuthorize("hasRole('EMPLOYEE')")
+@RequiredArgsConstructor
 public class ApplianceController {
 
     private final ApplianceService applianceService;
 
-    public ApplianceController(ApplianceService applianceService) {
-        this.applianceService = applianceService;
-    }
-
     @GetMapping
-    public ResponseEntity<List<ApplianceResponseDto>> findAll() {
-        return ResponseEntity.ok(applianceService.findAll());
+    public ResponseEntity<PageResponseDto<ApplianceResponseDto>> findAll(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
+
+        Pageable pageable = PageableFactory.forAppliance(page, size, sortBy, sortDirection);        return ResponseEntity.ok(applianceService.findAll(pageable));
     }
 
     @GetMapping("/{id}")
@@ -43,7 +49,7 @@ public class ApplianceController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ApplianceResponseDto> update(@PathVariable Long id,
-                                                        @Valid @RequestBody ApplianceRequestDto requestDto) {
+                                                       @Valid @RequestBody ApplianceRequestDto requestDto) {
         return ResponseEntity.ok(applianceService.update(id, requestDto));
     }
 
@@ -58,5 +64,22 @@ public class ApplianceController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(applianceService.getCategoryStatistics());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<PageResponseDto<ApplianceResponseDto>> searchByManufacturerAndPrice(
+            @RequestParam String manufacturer,
+            @RequestParam BigDecimal minPrice,
+            @RequestParam BigDecimal maxPrice,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
+
+        Pageable pageable = PageableFactory.forAppliance(page, size, sortBy, sortDirection);        return ResponseEntity.ok(
+                applianceService.findByManufacturerAndPriceRange(
+                        manufacturer, minPrice, maxPrice, pageable
+                )
+        );
     }
 }
