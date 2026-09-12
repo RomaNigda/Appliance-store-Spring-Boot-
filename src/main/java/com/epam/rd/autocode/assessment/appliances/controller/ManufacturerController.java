@@ -7,6 +7,7 @@ import com.epam.rd.autocode.assessment.appliances.service.ManufacturerService;
 import com.epam.rd.autocode.assessment.appliances.service.impl.ManufacturerServiceImpl;
 import com.epam.rd.autocode.assessment.appliances.web.PageableFactory;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/manufacturers")
 @PreAuthorize("hasRole('EMPLOYEE')")
+@RequiredArgsConstructor
+
 @Validated
 public class ManufacturerController {
 
@@ -26,9 +29,6 @@ public class ManufacturerController {
 
     private final ManufacturerService manufacturerService;
 
-    public ManufacturerController(ManufacturerServiceImpl manufacturerService) {
-        this.manufacturerService = manufacturerService;
-    }
 
     @GetMapping
     public ResponseEntity<PageResponseDto<ManufacturerResponseDto>> findAll(
