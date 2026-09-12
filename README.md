@@ -56,7 +56,7 @@ Your application must implement next layers:
 * You have files with initial data, but you can use other data.
   To load initial data, use
   `spring.sql.init.data-locations=classpath:manufacturer.sql, classpath:client.sql, classpath:employee.sql, classpath:appliance.sql`
-  in `application.properties`.
+  in `application.yml`.
 * Files with initial data located `resources`. The list of files includes `manufacturer.sql`, `client.sql`, `employee.sql`, `appliance.sql`.
 * Additionally, you may to using files to frond-end from `resources\templates\**`, or use yourself front-end.  
 * If you do not have enough time to implement all the requirements, you can choose to implement only part of the functionality. For example, you can focus on add, delete, and update for employees and not implement them for clients.
