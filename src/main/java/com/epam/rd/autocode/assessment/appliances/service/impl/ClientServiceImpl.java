@@ -2,6 +2,7 @@ package com.epam.rd.autocode.assessment.appliances.service.impl;
 
 import com.epam.rd.autocode.assessment.appliances.dto.ClientRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.ClientResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.PageResponseDto;
 import com.epam.rd.autocode.assessment.appliances.entity.ClientEntity;
 import com.epam.rd.autocode.assessment.appliances.exceptions.ClientNotFoundException;
 import com.epam.rd.autocode.assessment.appliances.mapper.ClientMapper;
@@ -9,11 +10,12 @@ import com.epam.rd.autocode.assessment.appliances.repository.ClientRepository;
 import com.epam.rd.autocode.assessment.appliances.service.ClientService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,16 +27,16 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ClientResponseDto> findAll() {
-        log.debug("Fetching all clients");
+    public PageResponseDto<ClientResponseDto> findAll(Pageable pageable) {
+        log.debug("Fetching clients, page: {}, size: {}",
+                pageable.getPageNumber(), pageable.getPageSize());
 
-        List<ClientResponseDto> result = clientRepository.findAll()
-                .stream()
-                .map(clientMapper::toResponseDto)
-                .toList();
+        Page<ClientEntity> page = clientRepository.findAll(pageable);
 
-        log.debug("Found {} clients", result.size());
-        return result;
+        log.debug("Found {} clients on page {} of {}",
+                page.getNumberOfElements(), page.getNumber() + 1, page.getTotalPages());
+
+        return PageResponseDto.from(page, clientMapper::toResponseDto);
     }
 
     @Override
@@ -65,7 +67,6 @@ public class ClientServiceImpl implements ClientService {
 
         ClientEntity entity = clientMapper.toEntity(requestDto);
 
-        // Хешуємо пароль
         log.debug("Encoding password");
         entity.setPassword(passwordEncoder.encode(requestDto.password()));
         log.debug("Password encoded successfully");
@@ -89,7 +90,6 @@ public class ClientServiceImpl implements ClientService {
 
         log.debug("Current client: {}", entity);
 
-        // Перевірка email на дублікат
         if (!entity.getEmail().equals(requestDto.email()) &&
                 clientRepository.existsByEmail(requestDto.email())) {
             log.warn("Attempt to update client to duplicate email: {}", requestDto.email());
@@ -98,12 +98,10 @@ public class ClientServiceImpl implements ClientService {
             );
         }
 
-        // Оновлюємо поля (крім пароля)
         entity.setName(requestDto.name());
         entity.setEmail(requestDto.email());
         entity.setCard(requestDto.card());
 
-        // Оновлюємо пароль тільки якщо він змінився
         if (!passwordEncoder.matches(requestDto.password(), entity.getPassword())) {
             log.debug("Password changed, encoding new password");
             entity.setPassword(passwordEncoder.encode(requestDto.password()));

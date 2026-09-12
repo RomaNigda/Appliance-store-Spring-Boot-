@@ -2,12 +2,12 @@ package com.epam.rd.autocode.assessment.appliances.service;
 
 import com.epam.rd.autocode.assessment.appliances.dto.ClientRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.ClientResponseDto;
-
-import java.util.List;
+import com.epam.rd.autocode.assessment.appliances.dto.PageResponseDto;
+import org.springframework.data.domain.Pageable;
 
 public interface ClientService {
 
-    List<ClientResponseDto> findAll();
+    PageResponseDto<ClientResponseDto> findAll(Pageable pageable);
 
     ClientResponseDto findById(Long id);
 

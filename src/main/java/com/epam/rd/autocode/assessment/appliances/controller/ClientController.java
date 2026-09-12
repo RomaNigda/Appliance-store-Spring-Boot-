@@ -1,33 +1,35 @@
 package com.epam.rd.autocode.assessment.appliances.controller;
 
-
 import com.epam.rd.autocode.assessment.appliances.dto.ClientRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.ClientResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.PageResponseDto;
 import com.epam.rd.autocode.assessment.appliances.service.ClientService;
+import com.epam.rd.autocode.assessment.appliances.web.PageableFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/clients")
 @PreAuthorize("hasRole('EMPLOYEE')")
+@RequiredArgsConstructor
 public class ClientController {
 
     private final ClientService clientService;
 
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
-    }
-
-
     @GetMapping
-    public ResponseEntity<List<ClientResponseDto>> findAll() {
-        return ResponseEntity.ok(clientService.findAll());
+    public ResponseEntity<PageResponseDto<ClientResponseDto>> findAll(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
+
+        Pageable pageable = PageableFactory.forClient(page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(clientService.findAll(pageable));
     }
 
     @GetMapping("/{id}")
@@ -44,7 +46,7 @@ public class ClientController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ClientResponseDto> update(@PathVariable Long id,
-                                                     @Valid @RequestBody ClientRequestDto requestDto) {
+                                                    @Valid @RequestBody ClientRequestDto requestDto) {
         return ResponseEntity.ok(clientService.update(id, requestDto));
     }
 
