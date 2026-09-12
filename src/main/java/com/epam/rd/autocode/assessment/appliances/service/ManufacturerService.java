@@ -2,13 +2,14 @@ package com.epam.rd.autocode.assessment.appliances.service;
 
 import com.epam.rd.autocode.assessment.appliances.dto.ManufacturerRequestDto;
 import com.epam.rd.autocode.assessment.appliances.dto.ManufacturerResponseDto;
+import com.epam.rd.autocode.assessment.appliances.dto.PageResponseDto;
 import com.epam.rd.autocode.assessment.appliances.entity.ManufacturerEntity;
 import jakarta.validation.Valid;
-
-import java.util.List;
+import org.springframework.data.domain.Pageable;
 
 public interface ManufacturerService {
-    List<ManufacturerResponseDto> findAll();
+
+    PageResponseDto<ManufacturerResponseDto> findAll(Pageable pageable);
 
     ManufacturerResponseDto findById(Long id);
 
