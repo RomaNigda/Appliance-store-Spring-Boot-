@@ -4,7 +4,10 @@ import com.epam.rd.autocode.assessment.appliances.exceptions.*;
 import com.epam.rd.autocode.assessment.appliances.web.ErrorResponse;
 import io.jsonwebtoken.JwtException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +25,106 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final MessageSource messageSource;
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+
+        Locale locale = LocaleContextHolder.getLocale();
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String messageKey = error.getDefaultMessage();
+
+            // Якщо повідомлення у форматі {key} — витягуємо ключ
+            String message = resolveMessage(messageKey, locale);
+            errors.put(fieldName, message);
+        });
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                messageSource.getMessage("error.validation.failed", null, "Validation failed", locale),
+                LocalDateTime.now(),
+                errors
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponse> handleHandlerMethodValidation(
+            HandlerMethodValidationException ex) {
+
+        Locale locale = LocaleContextHolder.getLocale();
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getAllValidationResults().forEach(result -> {
+            result.getResolvableErrors().forEach(error -> {
+                String field = result.getMethodParameter().getParameterName();
+                String message = resolveMessage(error.getDefaultMessage(), locale);
+                errors.put(field, message);
+            });
+        });
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                messageSource.getMessage("error.validation.failed", null, "Validation failed", locale),
+                LocalDateTime.now(),
+                errors
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(
+            ConstraintViolationException ex) {
+
+        Locale locale = LocaleContextHolder.getLocale();
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getConstraintViolations().forEach(violation -> {
+            String field = violation.getPropertyPath().toString();
+            String message = resolveMessage(violation.getMessage(), locale);
+            errors.put(field, message);
+        });
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                messageSource.getMessage("error.validation.failed", null, "Validation failed", locale),
+                LocalDateTime.now(),
+                errors
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    /**
+     * Розв'язує повідомлення: якщо це ключ у форматі {key}, шукає в messages.properties
+     */
+    private String resolveMessage(String messageOrKey, Locale locale) {
+        if (messageOrKey == null) {
+            return "Unknown error";
+        }
+
+        // Якщо повідомлення у форматі {key} — витягуємо ключ
+        if (messageOrKey.startsWith("{") && messageOrKey.endsWith("}")) {
+            String key = messageOrKey.substring(1, messageOrKey.length() - 1);
+            return messageSource.getMessage(key, null, messageOrKey, locale);
+        }
+
+        return messageOrKey;
+    }
 
     // ============ AUTHENTICATION & AUTHORIZATION ============
 
@@ -95,80 +193,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
-    // ============ VALIDATION ============
-
-    /**
-     * Валідація @RequestBody (@Valid)
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        log.warn("Validation failed: {}", ex.getMessage());
-
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = error instanceof FieldError fieldError
-                    ? fieldError.getField()
-                    : error.getObjectName();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Validation failed",
-                LocalDateTime.now(),
-                errors
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
-    /**
-     * Валідація @PathVariable / @RequestParam (@Validated на класі)
-     */
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<ErrorResponse> handleHandlerMethodValidation(HandlerMethodValidationException ex) {
-        log.warn("Method validation failed: {}", ex.getMessage());
-
-        Map<String, String> errors = new HashMap<>();
-        ex.getAllValidationResults().forEach(result -> {
-            result.getResolvableErrors().forEach(error -> {
-                String field = result.getMethodParameter().getParameterName();
-                String message = error.getDefaultMessage();
-                errors.put(field, message);
-            });
-        });
-
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Validation failed",
-                LocalDateTime.now(),
-                errors
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
-    /**
-     * Валідація в сервісах (@Validated)
-     */
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
-        log.warn("Constraint violation: {}", ex.getMessage());
-
-        Map<String, String> errors = new HashMap<>();
-        ex.getConstraintViolations().forEach(violation -> {
-            String field = violation.getPropertyPath().toString();
-            String message = violation.getMessage();
-            errors.put(field, message);
-        });
-
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                "Validation failed",
-                LocalDateTime.now(),
-                errors
-        );
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
+    
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
