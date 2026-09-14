@@ -1,5 +1,6 @@
 package com.epam.rd.autocode.assessment.appliances.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,13 +15,23 @@ import java.util.Locale;
 @Configuration
 public class MessageConfig {
 
+    @Value("${spring.messages.basename}")
+    private String basename;
+
+    @Value("${spring.messages.encoding}")
+    private String encoding;
+
+    @Value("${spring.messages.fallback-to-system-locale}")
+    private boolean fallbackToSystemLocale;
+
     @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:messages");
-        messageSource.setDefaultEncoding("UTF-8");
-        messageSource.setFallbackToSystemLocale(false);
+        messageSource.setBasename("classpath:" + basename);
+        messageSource.setDefaultEncoding(encoding);
+        messageSource.setFallbackToSystemLocale(fallbackToSystemLocale);
         messageSource.setUseCodeAsDefaultMessage(true);
+//        messageSource.setUseCodeAsDefaultMessage(false);
         return messageSource;
     }
 

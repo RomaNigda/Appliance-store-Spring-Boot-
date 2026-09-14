@@ -31,7 +31,6 @@ public abstract class UserEntity implements UserDetails {
 
     @Column(name = "name")
     @NotBlank(message = "{user.name.notBlank}")
-    @UniqueElements(message = "{user.name.unique}")
     private String name;
 
     @Column(name = "email")

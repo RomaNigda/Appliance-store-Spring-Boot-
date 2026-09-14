@@ -21,7 +21,7 @@ spring:
     defer-datasource-initialization: true
 
   messages:
-    basename: messages
+    basename: messages/messages
     encoding: UTF-8
     fallback-to-system-locale: false
 
