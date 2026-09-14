@@ -1,4 +1,3 @@
-# ============ POSTGRESQL DATASOURCE ============
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/appliance-store
@@ -6,7 +5,6 @@ spring:
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
-  # ============ JPA / HIBERNATE ============
   jpa:
     hibernate:
       ddl-auto: validate
@@ -19,12 +17,10 @@ spring:
           validation:
             mode: auto
 
-  # ============ SQL INIT ============
   sql:
     init:
       mode: never
 
-# ============ LOGGING ============
 logging:
   level:
     root: WARN
