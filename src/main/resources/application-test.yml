@@ -1,0 +1,43 @@
+# ============ H2 DATASOURCE (in-memory) ============
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # ============ JPA / HIBERNATE ============
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+      jakarta:
+        persistence:
+          validation:
+            mode: auto
+    defer-datasource-initialization: true
+
+  # ============ H2 CONSOLE ============
+  h2:
+    console:
+      enabled: false
+
+  # ============ SQL INIT ============
+  sql:
+    init:
+      mode: never
+
+# ============ JWT (тестовий секрет) ============
+jwt:
+  secret: test-secret-key-for-jwt-authentication-spring-boot-test-1234567890
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+# ============ LOGGING ============
+logging:
+  level:
+    root: WARN
+    com.epam.rd.autocode.assessment.appliances: DEBUG

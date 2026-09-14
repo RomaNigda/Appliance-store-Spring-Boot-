@@ -1,0 +1,31 @@
+# ============ POSTGRESQL DATASOURCE ============
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/appliance-store
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  # ============ JPA / HIBERNATE ============
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+      jakarta:
+        persistence:
+          validation:
+            mode: auto
+
+  # ============ SQL INIT ============
+  sql:
+    init:
+      mode: never
+
+# ============ LOGGING ============
+logging:
+  level:
+    root: WARN
+    com.epam.rd.autocode.assessment.appliances: INFO
