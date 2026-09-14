@@ -73,7 +73,7 @@ class AuthControllerTest {
         @DisplayName("Should register client and return 201")
         void shouldRegisterClient() throws Exception {
             RegisterRequestDto request = new RegisterRequestDto(
-                    "John Client", "john@client.com", "password123",
+                    "John Client", "john@client.com", "Password123!",
                     null, "1234-5678-9012-3456"
             );
 
@@ -100,7 +100,7 @@ class AuthControllerTest {
         @DisplayName("Should return 409 when email already exists")
         void shouldReturn409WhenDuplicateEmail() throws Exception {
             RegisterRequestDto request = new RegisterRequestDto(
-                    "John Client", "john@client.com", "password123",
+                    "John Client", "john@client.com", "Password123!",
                     null, "1234-5678-9012-3456"
             );
 
@@ -118,7 +118,7 @@ class AuthControllerTest {
         @DisplayName("Should return 400 when email is invalid")
         void shouldReturn400WhenEmailInvalid() throws Exception {
             RegisterRequestDto request = new RegisterRequestDto(
-                    "John Client", "invalid-email", "password123",
+                    "John Client", "invalid-email", "Password123!",
                     null, "1234-5678-9012-3456"
             );
 
@@ -136,7 +136,7 @@ class AuthControllerTest {
         @DisplayName("Should return 400 when name is blank")
         void shouldReturn400WhenNameBlank() throws Exception {
             RegisterRequestDto request = new RegisterRequestDto(
-                    "", "john@client.com", "password123",
+                    "", "john@client.com", "Password123!",
                     null, "1234-5678-9012-3456"
             );
 
@@ -179,7 +179,7 @@ class AuthControllerTest {
         @DisplayName("Should register employee and return 201")
         void shouldRegisterEmployee() throws Exception {
             RegisterRequestDto request = new RegisterRequestDto(
-                    "Jane Employee", "jane@employee.com", "password123",
+                    "Jane Employee", "jane@employee.com", "Password123!",
                     "IT", null
             );
 
@@ -208,7 +208,7 @@ class AuthControllerTest {
         @DisplayName("Should return 409 when email already exists")
         void shouldReturn409WhenDuplicateEmail() throws Exception {
             RegisterRequestDto request = new RegisterRequestDto(
-                    "Jane Employee", "jane@employee.com", "password123",
+                    "Jane Employee", "jane@employee.com", "Password123!",
                     "IT", null
             );
 
@@ -226,7 +226,7 @@ class AuthControllerTest {
         @DisplayName("Should return 400 when email is invalid")
         void shouldReturn400WhenEmailInvalid() throws Exception {
             RegisterRequestDto request = new RegisterRequestDto(
-                    "Jane Employee", "not-an-email", "password123",
+                    "Jane Employee", "not-an-email", "Password123!",
                     "IT", null
             );
 
@@ -249,7 +249,7 @@ class AuthControllerTest {
         @Test
         @DisplayName("Should login successfully and return 200")
         void shouldLoginSuccessfully() throws Exception {
-            AuthRequestDto request = new AuthRequestDto("john@client.com", "password123");
+            AuthRequestDto request = new AuthRequestDto("john@client.com", "Password123!");
 
             when(authService.login(any(AuthRequestDto.class))).thenReturn(authResponse);
 
@@ -269,7 +269,7 @@ class AuthControllerTest {
         @Test
         @DisplayName("Should return 401 when credentials are invalid")
         void shouldReturn401WhenBadCredentials() throws Exception {
-            AuthRequestDto request = new AuthRequestDto("john@client.com", "wrongPassword");
+            AuthRequestDto request = new AuthRequestDto("john@client.com", "Password123!!");
 
             when(authService.login(any(AuthRequestDto.class)))
                     .thenThrow(new BadCredentialsException("Bad credentials"));
@@ -284,7 +284,7 @@ class AuthControllerTest {
         @Test
         @DisplayName("Should return 400 when email is blank")
         void shouldReturn400WhenEmailBlank() throws Exception {
-            AuthRequestDto request = new AuthRequestDto("", "password123");
+            AuthRequestDto request = new AuthRequestDto("", "Password123!");
 
             mockMvc.perform(post("/api/auth/login")
                             .with(csrf())
@@ -299,7 +299,7 @@ class AuthControllerTest {
         @Test
         @DisplayName("Should return 400 when email is invalid")
         void shouldReturn400WhenEmailInvalid() throws Exception {
-            AuthRequestDto request = new AuthRequestDto("invalid-email", "password123");
+            AuthRequestDto request = new AuthRequestDto("invalid-email", "Password123!");
 
             mockMvc.perform(post("/api/auth/login")
                             .with(csrf())

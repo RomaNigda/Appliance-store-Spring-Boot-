@@ -51,7 +51,7 @@ class ClientControllerTest {
         requestDto = new ClientRequestDto(
                 "John Client",
                 "john@client.com",
-                "password123",
+                "Password123!",
                 "1234-5678-9012-3456"
         );
 
@@ -199,7 +199,7 @@ class ClientControllerTest {
         @DisplayName("Should return 400 when name is blank")
         void shouldReturn400WhenNameBlank() throws Exception {
             ClientRequestDto invalidRequest = new ClientRequestDto(
-                    "", "john@client.com", "password123", "1234-5678-9012-3456"
+                    "", "john@client.com", "Password123!", "1234-5678-9012-3456"
             );
 
             mockMvc.perform(post("/api/clients")
@@ -217,7 +217,7 @@ class ClientControllerTest {
         @DisplayName("Should return 400 when email is invalid")
         void shouldReturn400WhenEmailInvalid() throws Exception {
             ClientRequestDto invalidRequest = new ClientRequestDto(
-                    "John Client", "invalid-email", "password123", "1234-5678-9012-3456"
+                    "John Client", "invalid-email", "Password123!", "1234-5678-9012-3456"
             );
 
             mockMvc.perform(post("/api/clients")
@@ -312,7 +312,7 @@ class ClientControllerTest {
         @DisplayName("Should return 400 when name is blank")
         void shouldReturn400WhenNameBlank() throws Exception {
             ClientRequestDto invalidRequest = new ClientRequestDto(
-                    "", "john@client.com", "password123", "1234-5678-9012-3456"
+                    "", "john@client.com", "Password123!", "1234-5678-9012-3456"
             );
 
             mockMvc.perform(put("/api/clients/{id}", 1L)
