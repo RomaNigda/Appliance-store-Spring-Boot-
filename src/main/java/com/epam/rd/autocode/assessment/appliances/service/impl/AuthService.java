@@ -52,25 +52,20 @@ public class AuthService {
             throw new DuplicateEmailException("Email already registered: " + request.email());
         }
 
-        // Пошук існуючої ролі в БД
         RoleEntity clientRole = (RoleEntity) roleRepository.findByName(RoleName.ROLE_CLIENT)
                 .orElseThrow(() -> new EntityNotFoundException("Role not found: " + RoleName.ROLE_CLIENT));
 
-        // Створення клієнта
         ClientEntity client = new ClientEntity();
         client.setName(request.name());
         client.setEmail(request.email());
         client.setPassword(passwordEncoder.encode(request.password()));
         client.setCard(request.card());
 
-        // Присвоюємо кешовану сутність з БД (ВИДАЛЕНО client.addRole(RoleName.ROLE_CLIENT))
-//        client.getRoles().add(clientRole);
         client.addRole(clientRole);
 
         ClientEntity saved = clientRepository.save(client);
         log.debug("Client registered successfully with id: {}. Client = {}", saved.getId(), saved.toString());
 
-        // Генерація токенів
         String accessToken = jwtService.generateAccessToken(saved);
         String refreshToken = jwtService.generateRefreshToken(saved);
 
@@ -93,32 +88,26 @@ public class AuthService {
     public AuthResponseDto registerEmployee(RegisterRequestDto request) {
         log.debug("Registering new employee: {}", request.email());
 
-        // Перевірка, чи email вже використовується
         if (clientRepository.existsByEmail(request.email()) ||
                 employeeRepository.existsByEmail(request.email())) {
             log.warn("Email already registered: {}", request.email());
             throw new DuplicateEmailException("Email already registered: " + request.email());
         }
 
-        // Пошук існуючої ролі в БД
         RoleEntity employeeRole = (RoleEntity) roleRepository.findByName(RoleName.ROLE_EMPLOYEE)
                 .orElseThrow(() -> new EntityNotFoundException("Role not found: " + RoleName.ROLE_EMPLOYEE));
 
-        // Створення працівника
         EmployeeEntity employee = new EmployeeEntity();
         employee.setName(request.name());
         employee.setEmail(request.email());
         employee.setPassword(passwordEncoder.encode(request.password()));
         employee.setDepartment(request.department());
 
-        // Присвоюємо кешовану сутність з БД (ВИДАЛЕНО employee.addRole(RoleName.ROLE_EMPLOYEE))
         employee.addRole(employeeRole);
-//        employee.getRoles().add(employeeRole);
 
         EmployeeEntity saved = employeeRepository.save(employee);
         log.debug("Employee registered successfully with id: {}", saved.getId());
 
-        // Генерація токенів
         String accessToken = jwtService.generateAccessToken(saved);
         String refreshToken = jwtService.generateRefreshToken(saved);
 
@@ -138,16 +127,13 @@ public class AuthService {
         log.debug("Authenticating user: {}", request.email());
 
         try {
-            // Аутентифікація
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.email(), request.password())
             );
             log.debug("Authentication successful for user: {}. User roles: {}", request.email(),  authentication.getAuthorities());
 
-            // Отримуємо користувача
             UserEntity user = getUserByEmail(request.email());
 
-            // Генеруємо токени
             String accessToken = jwtService.generateAccessToken((UserDetails) authentication.getPrincipal());
             String refreshToken = jwtService.generateRefreshToken((UserDetails) authentication.getPrincipal());
 

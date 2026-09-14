@@ -79,7 +79,8 @@ public class ApplianceController {
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false, defaultValue = "asc") String sortDirection) {
 
-        Pageable pageable = PageableFactory.forAppliance(page, size, sortBy, sortDirection);        return ResponseEntity.ok(
+        Pageable pageable = PageableFactory.forAppliance(page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(
                 applianceService.findByManufacturerAndPriceRange(
                         manufacturer, minPrice, maxPrice, pageable
                 )

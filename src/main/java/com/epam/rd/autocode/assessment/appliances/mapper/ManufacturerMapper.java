@@ -8,9 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ManufacturerMapper {
 
-    /**
-     * Конвертує ManufacturerRequestDto → ManufacturerEntity
-     */
     public ManufacturerEntity toEntity(ManufacturerRequestDto dto) {
         if (dto == null) {
             return null;
@@ -22,9 +19,7 @@ public class ManufacturerMapper {
         return entity;
     }
 
-    /**
-     * Конвертує ManufacturerEntity → ManufacturerResponseDto
-     */
+
     public ManufacturerResponseDto toResponseDto(ManufacturerEntity entity) {
         if (entity == null) {
             return null;
@@ -36,9 +31,7 @@ public class ManufacturerMapper {
         );
     }
 
-    /**
-     * Оновлює існуючу Entity з даних DTO (для PUT/UPDATE)
-     */
+
     public void updateEntity(ManufacturerRequestDto dto, ManufacturerEntity entity) {
         if (dto == null || entity == null) {
             return;

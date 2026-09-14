@@ -39,10 +39,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // 🔥 КЛЮЧОВЕ: обробка помилок автентифікації та авторизації
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint())
                         .accessDeniedHandler(accessDeniedHandler())
@@ -54,9 +52,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Обробник для НЕавтентифікованих користувачів → 401 UNAUTHORIZED
-     */
+
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
@@ -76,9 +72,7 @@ public class SecurityConfig {
         };
     }
 
-    /**
-     * Обробник для автентифікованих, але без прав → 403 FORBIDDEN
-     */
+
     @Bean
     public AccessDeniedHandler accessDeniedHandler() {
         return (request, response, accessDeniedException) -> {

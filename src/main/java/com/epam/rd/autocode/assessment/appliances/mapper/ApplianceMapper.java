@@ -16,9 +16,7 @@ public class ApplianceMapper {
     private final ManufacturerService manufacturerService;
     private final ManufacturerMapper manufacturerMapper;
 
-    /**
-     * Конвертує ApplianceRequestDto → ApplianceEntity
-     */
+
     public ApplianceEntity toEntity(ApplianceRequestDto dto) {
         if (dto == null) {
             return null;
@@ -29,7 +27,6 @@ public class ApplianceMapper {
         entity.setCategory(dto.category());
         entity.setModel(dto.model());
 
-        // Отримуємо ManufacturerEntity з БД за ID
         ManufacturerEntity manufacturer = manufacturerService.getManufacturerEntityById(
                 dto.manufacturer().getId()
         );
@@ -44,9 +41,7 @@ public class ApplianceMapper {
         return entity;
     }
 
-    /**
-     * Конвертує ApplianceEntity → ApplianceResponseDto
-     */
+
     public ApplianceResponseDto toResponseDto(ApplianceEntity entity) {
         if (entity == null) {
             return null;
@@ -66,9 +61,7 @@ public class ApplianceMapper {
         );
     }
 
-    /**
-     * Оновлює існуючу Entity з даних DTO (для PUT/UPDATE)
-     */
+
     public void updateEntity(ApplianceRequestDto dto, ApplianceEntity entity) {
         if (dto == null || entity == null) {
             return;

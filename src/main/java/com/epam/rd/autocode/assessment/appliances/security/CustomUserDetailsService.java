@@ -23,14 +23,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.debug("Loading user by email: {}", email);
 
-        // Шукаємо серед клієнтів
         return clientRepository.findByEmail(email)
                 .map(user -> {
                     log.debug("Found client: {} with email: {}", user.getName(), user.getEmail());
                     return (UserDetails) user;
                 })
                 .orElseGet(() -> {
-                    // Шукаємо серед працівників
                     EmployeeEntity employee = employeeRepository.findByEmail(email)
                             .orElseThrow(() -> {
                                 log.warn("User not found with email: {}", email);

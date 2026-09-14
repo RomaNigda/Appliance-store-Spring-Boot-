@@ -32,7 +32,6 @@ public class RoleEntity {
         this.name = name;
     }
 
-    // Власна безпечна реалізація equals та hashCode за бізнес-ключем (name) або id
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

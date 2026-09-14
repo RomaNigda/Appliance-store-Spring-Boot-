@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmployeeMapper {
 
-    /**
-     * Конвертує EmployeeRequestDto → EmployeeEntity
-     */
+
     public EmployeeEntity toEntity(EmployeeRequestDto dto) {
         if (dto == null) {
             log.debug("EmployeeRequestDto is null, returning null entity");
@@ -31,9 +29,7 @@ public class EmployeeMapper {
         return entity;
     }
 
-    /**
-     * Конвертує EmployeeEntity → EmployeeResponseDto
-     */
+
     public EmployeeResponseDto toResponseDto(EmployeeEntity entity) {
         if (entity == null) {
             log.debug("EmployeeEntity is null, returning null response");
@@ -51,9 +47,7 @@ public class EmployeeMapper {
         );
     }
 
-    /**
-     * Оновлює існуючу Entity з даних DTO (для PUT/UPDATE)
-     */
+
     public void updateEntity(EmployeeRequestDto dto, EmployeeEntity entity) {
         if (dto == null || entity == null) {
             log.debug("Cannot update entity: dto or entity is null");

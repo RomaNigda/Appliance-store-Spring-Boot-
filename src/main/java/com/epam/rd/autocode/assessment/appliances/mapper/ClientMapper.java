@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClientMapper {
 
-    /**
-     * Конвертує ClientRequestDto → ClientEntity
-     */
+
     public ClientEntity toEntity(ClientRequestDto dto) {
         if (dto == null) {
             log.debug("ClientRequestDto is null, returning null entity");
@@ -31,9 +29,7 @@ public class ClientMapper {
         return entity;
     }
 
-    /**
-     * Конвертує ClientEntity → ClientResponseDto
-     */
+
     public ClientResponseDto toResponseDto(ClientEntity entity) {
         if (entity == null) {
             log.debug("ClientEntity is null, returning null response");
@@ -51,9 +47,7 @@ public class ClientMapper {
         );
     }
 
-    /**
-     * Оновлює існуючу Entity з даних DTO (для PUT/UPDATE)
-     */
+
     public void updateEntity(ClientRequestDto dto, ClientEntity entity) {
         if (dto == null || entity == null) {
             log.debug("Cannot update entity: dto or entity is null");

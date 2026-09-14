@@ -17,9 +17,7 @@ public class OrderMapper {
 
     private final ApplianceRepository applianceRepository;
 
-    /**
-     * Конвертує OrderRequestDto → OrderEntity
-     */
+
     public OrderEntity toEntity(OrderRequestDto dto) {
         if (dto == null) {
             log.debug("OrderRequestDto is null, returning null entity");
@@ -31,7 +29,6 @@ public class OrderMapper {
         OrderEntity entity = new OrderEntity();
         entity.setApproved(false);
 
-        // Додаємо рядки замовлення
         for (OrderRowRequestDto rowDto : dto.orderRows()) {
             ApplianceEntity appliance = applianceRepository.findById(rowDto.applianceId())
                     .orElseThrow(() -> new RuntimeException("Appliance not found with id: " + rowDto.applianceId()));
@@ -47,9 +44,7 @@ public class OrderMapper {
         return entity;
     }
 
-    /**
-     * Оновлює існуючу Entity з даних DTO (для PUT/UPDATE)
-     */
+
     public void updateEntity(OrderRequestDto dto, OrderEntity entity) {
         if (dto == null || entity == null) {
             log.debug("Cannot update entity: dto or entity is null");
@@ -58,10 +53,8 @@ public class OrderMapper {
 
         log.debug("Updating entity with DTO: {}", dto);
 
-        // Очищаємо старі рядки
         entity.getOrderRowSet().clear();
 
-        // Додаємо нові рядки
         for (OrderRowRequestDto rowDto : dto.orderRows()) {
             ApplianceEntity appliance = applianceRepository.findById(rowDto.applianceId())
                     .orElseThrow(() -> new RuntimeException("Appliance not found with id: " + rowDto.applianceId()));

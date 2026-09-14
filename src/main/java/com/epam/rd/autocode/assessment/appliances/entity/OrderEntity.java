@@ -36,7 +36,6 @@ public class OrderEntity {
     @Column(nullable = false)
     private boolean approved = false;
 
-    // Helper methods keep both sides of the bidirectional relation in sync
     public void addOrderRow(OrderRowEntity orderRow) {
         orderRowSet.add(orderRow);
         orderRow.setOrder(this);
