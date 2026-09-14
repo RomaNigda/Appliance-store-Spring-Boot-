@@ -30,6 +30,10 @@ spring:
     locale: en
     locale-resolver: accept-header
 
+  sql:
+    init:
+      mode: always
+
 
 
 # Server Settings
