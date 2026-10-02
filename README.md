@@ -1,64 +1,134 @@
-# Appliance store test(Spring Boot)
+# Appliance Store
 
-The purpose of this exercise is to check your knowledge and understanding Spring Boot technology.
+A Spring Boot REST API for managing an appliance store: catalog, manufacturers, clients and orders, with role-based access for employees and clients.
 
-Duration: **15** hour
+Built as the final test project for the EPAM AutoCode Java course.
 
-## Description
+## Features
 
-In this exercise, you will implement an "Appliances shop" using Spring Boot.
-Your application has to imitate work of an online shop.
+- **Employees** manage all data: CRUD for employees, clients, appliances and manufacturers, and approve client orders.
+- **Clients** create, view, update and delete their own orders.
+- **JWT authentication** with role-based access: the role is derived from the table the user is found in (`EmployeeEntity` → `ROLE_EMPLOYEE`, `ClientEntity` → `ROLE_CLIENT`).
+- **Internationalization (i18n)**: messages are available in two languages (Ukrainian and English).
+- **Pagination** for list endpoints.
+- **Validation** with Bean Validation.
+- **Logging** through a custom `@Loggable` annotation and an AOP aspect.
+- **Database migrations** with Flyway.
 
-Employees should be able to do the following:
-1. show every table;
-2. add, correct, and delete `EmployeeEntity`, `ClientEntity`, `ApplianceEntity`, `ManufacturerEntity`;
-3. approve orders.
+## Tech Stack
 
-Clients and employees should be able to do the following:
-1. have navigation and provide access for permitted elements front-end;
-2. add, correct, and delete orders.
+| Area          | Technology                     |
+|---------------|--------------------------------|
+| Language      | Java                           |
+| Framework     | Spring Boot                    |
+| Persistence   | Spring Data JPA, PostgreSQL    |
+| Migrations    | Flyway                         |
+| Security      | Spring Security, JWT, BCrypt   |
+| Cross-cutting | Spring AOP (logging)           |
+| Containers    | Docker, Docker Compose         |
 
-Users must be able to work in two languages(native and English). 
+## Domain Model
 
-The class diagram of the Domain model is shown in the figure below:
-![img.png](img.png)
+- `Manufacturer`
+- `Appliance`: has a `Category` and a `PowerType` (enums) and belongs to a manufacturer
+- `Orders`: placed by a client, approved by an employee
+- `OrderRow`: an appliance with a quantity inside an order
+- `EmployeeEntity` and `ClientEntity`: independent entities, each with its own id, name, email and password
 
-Your application must implement next layers:
-* Repository - work with necessary entities (JPA);
-* Service - contains business logic your application;
-* Controller - is front end your application. 
+## Project Structure
 
-### Requirements:
-* Use a skeleton application;
-* Use H2 database to realisation storage;
-* Use annotations to describe DB entities. List of entities:
-  * `UserEntity`;
-  * `ClientEntity`;
-  * `EmployeeEntity`;
-  * `ManufacturerEntity`;
-  * `ApplianceEntity`;
-  * `OrderEntity`;
-  * `OrderRowEntity`.
-* Use Spring JPA technology;
-* Use Spring Security;
-* Implement internationalization and localization in controllers;
-* Implement validation for the Domain model and controllers.
+```
+src/main/java/.../
+├── aspect/        # @Loggable annotation and logging aspect
+├── config/        # MainConfig, SecurityConfig
+├── controller/    # REST controllers
+├── dto/           # DTO layer (*Dto)
+├── entity/        # JPA entities (*Entity)
+├── model/         # Domain models
+├── repository/    # Spring Data JPA repositories
+└── service/       # Business logic
+```
 
-### Would be nice
-* to use logging;
-* to implement pagination and sorting in controllers;
-* to explore other Spring technologies;
-* to write tests for controllers and services.
+## Getting Started
 
-### Recommendations
-* Use `Lombok`
-* Implement In-Memory Authentication(Spring Security).
-* You have files with initial data, but you can use other data.
-  To load initial data, use
-  `spring.sql.init.data-locations=classpath:manufacturer.sql, classpath:client.sql, classpath:employee.sql, classpath:appliance.sql`
-  in `application.yml`.
-* Files with initial data located `resources`. The list of files includes `manufacturer.sql`, `client.sql`, `employee.sql`, `appliance.sql`.
-* Additionally, you may to using files to frond-end from `resources\templates\**`, or use yourself front-end.  
-* If you do not have enough time to implement all the requirements, you can choose to implement only part of the functionality. For example, you can focus on add, delete, and update for employees and not implement them for clients.
+### Prerequisites
 
-Good luck. You have only 15 hours
+- JDK 17+
+- Maven (the wrapper `./mvnw` is included)
+- Docker and Docker Compose (for the containerized setup)
+
+### Run with Docker Compose (recommended)
+
+```bash
+git clone <repository-url>
+cd appliance-store
+docker compose up --build
+```
+
+This starts two containers:
+
+| Service | Container     | Description                          | Port           |
+|---------|---------------|--------------------------------------|----------------|
+| `app`   | `java-app`    | Spring Boot API (`prod` profile)     | `8080`         |
+| `db`    | `postgres-db` | PostgreSQL 15 (alpine)               | `5432`         |
+
+- The app starts only after the database passes its healthcheck (`pg_isready`).
+- Flyway applies the migrations automatically on startup.
+- Database data is stored in the named volume `pgdata`, so it survives restarts.
+- The app reaches the database at host `db`, not `localhost`.
+
+The API is available at `http://localhost:8080`.
+
+Useful commands:
+
+```bash
+docker compose logs -f app     # follow application logs
+docker compose down            # stop containers, keep data
+docker compose down -v         # stop containers and delete the database volume
+```
+
+### Configuration
+
+The app is configured through environment variables set in `docker-compose.yml`:
+
+| Variable                     | Value in Compose                      |
+|------------------------------|---------------------------------------|
+| `SPRING_PROFILES_ACTIVE`     | `prod`                                |
+| `SPRING_DATASOURCE_URL`      | `jdbc:postgresql://db:5432/mydb`      |
+| `SPRING_DATASOURCE_USERNAME` | `myuser`                              |
+| `SPRING_DATASOURCE_PASSWORD` | `mypassword`                          |
+
+> The credentials above are development defaults. Change them before any real deployment.
+
+### Run locally without Docker
+
+Start a PostgreSQL instance, set the same `SPRING_DATASOURCE_*` variables (with `localhost` as the host), then run:
+
+```bash
+./mvnw spring-boot:run
+```
+
+## Authentication
+
+The API uses JWT (JSON Web Token) authentication:
+
+1. A user logs in with email and password and receives a JWT.
+2. The token is sent with every protected request in the `Authorization` header:
+
+```
+Authorization: Bearer <token>
+```
+
+A custom `UserDetailsService` looks the user up by email in the employee and client repositories, and passwords are stored with BCrypt. The role is taken from the table the user is found in (`ROLE_EMPLOYEE` or `ROLE_CLIENT`). CSRF protection is disabled for `/api/**`.
+
+There are no pre-created accounts: the database schema is created by Flyway migrations and contains no seeded users.
+
+## Tests
+
+```bash
+./mvnw test
+```
+
+## Author
+
+Roma, Java backend developer in training.
