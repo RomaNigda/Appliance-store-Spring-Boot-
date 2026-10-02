@@ -1,22 +1,25 @@
 spring:
+  application:
+    name: appliance-store
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/appliance-store
-    username: postgres
-    password: postgres
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    defer-datasource-initialization: false
     properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
       jakarta:
         persistence:
           validation:
             mode: auto
-    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: never
 
   messages:
     basename: messages/messages
@@ -29,18 +32,12 @@ spring:
     resources:
       add-mappings: false
 
-
-  sql:
-    init:
-      mode: never
-
-
-
 server:
   port: 8080
 
 logging:
   level:
+    root: INFO
     com.epam.rd.autocode.assessment.appliances:
       service.impl: INFO
       controller: INFO
