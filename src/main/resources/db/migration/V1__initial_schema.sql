@@ -1,15 +1,6 @@
 -- ============================================
--- DROP TABLES (для перестворення)
+-- V1: Initial database schema
 -- ============================================
-DROP TABLE IF EXISTS order_rows CASCADE;
-DROP TABLE IF EXISTS orders CASCADE;
-DROP TABLE IF EXISTS user_roles CASCADE;
-DROP TABLE IF EXISTS clients CASCADE;
-DROP TABLE IF EXISTS employees CASCADE;
-DROP TABLE IF EXISTS users CASCADE;
-DROP TABLE IF EXISTS appliances CASCADE;
-DROP TABLE IF EXISTS manufacturers CASCADE;
-DROP TABLE IF EXISTS roles CASCADE;
 
 -- ============================================
 -- ROLES
