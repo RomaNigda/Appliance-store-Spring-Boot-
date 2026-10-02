@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: java-app
+    ports:
+      - "8080:8080"          # Ліва частина — порт хост-машини, права — порт контейнера
+    depends_on:
+      db:
+        condition: service_healthy   # Чекаємо, поки база даних стане здоровою, перш ніж запускати програму
+    environment:
+      # Увага: хост тут — db, а не localhost
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_USERNAME: myuser
+      SPRING_DATASOURCE_PASSWORD: mypassword
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine        # Використовуємо офіційний образ
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"                  # Якщо потрібно підключитися до бази даних з хост-машини, зберігаємо це відображення
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # Постійне збереження даних
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U myuser -d mydb" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:                            # Оголошуємо іменований том для збереження даних бази даних
